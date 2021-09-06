@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3b81cf2e-ab06-42c3-b954-0ddc9a68f69a" >
+		<http:listener-connection host="localhost" port="8083" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="e1fa4a16-9da8-4cda-902f-8a0df9d86130" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="azmuthulla143@gmail.com" password="Azmu@123" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="f8a8368f-1f53-442a-96a4-879156d6a2e0" >
+		<file:connection workingDir="C:\Users\azmuu\Desktop\abc" />
+	</file:config>
+	<flow name="helloFlow" doc:id="01c49575-cde1-4920-bdbb-a16dc7a5d7b2" >
+		<http:listener doc:name="Listener" doc:id="85c63656-ca98-4a00-bff2-2993018fe785" config-ref="HTTP_Listener_config" path="mule"/>
+		<set-variable value="#[attributes.queryParams.filename]" doc:name="Set Variable" doc:id="cfc524fa-e78a-4f86-98cc-3753822375f4" variableName="filename"/>
+		<file:read doc:name="Read" doc:id="397434e4-f5b8-4737-9c8a-b750e921c826" config-ref="File_Config" path="C:\Users\azmuu\Desktop\abc\input\K1.txt"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e5c0e7e5-27b7-4edd-b936-41d387f81570" message="#[payload]"/>
+		<email:send doc:name="Send" doc:id="eb975a13-86e2-4833-8a5a-ea9c02cec0d5" config-ref="Email_SMTP" fromAddress="azmuuth123@gmail.com" subject="MAIL FROM MULESOFT">
+			<email:to-addresses >
+				<email:to-address value="azmuuth123@gmail.com" />
+			</email:to-addresses>
+			<email:cc-addresses >
+				<email:cc-address value="azmuthulla143@gmail.com" />
+				<email:cc-address value="salmanahid035@gmail.com" />
+			</email:cc-addresses>
+			<email:bcc-addresses >
+				<email:bcc-address value="salmanahid3106@gmail.com" />
+			</email:bcc-addresses>
+			<email:body >
+				<email:content ><![CDATA[Hey i am gonna work on smtp]]></email:content>
+			</email:body>
+			<email:attachments ><![CDATA[#[{
+  "attachments.txt" : payload
+}]]]></email:attachments>
+		</email:send>
+		<logger level="INFO" doc:name="Logger" doc:id="64550e97-4254-4f4e-91e0-86ae90a95418" message="#[payload]"/>
+	</flow>
+</mule>
